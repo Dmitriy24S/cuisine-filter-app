@@ -1,20 +1,11 @@
-import {
-  Box,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  IconButton,
-  Radio,
-  RadioGroup,
-  Tooltip,
-} from '@mui/material'
+import { Box, IconButton, Tooltip } from '@mui/material'
 import { ChangeEvent, MouseEvent, useEffect, useState } from 'react'
 import { VscClearAll } from 'react-icons/vsc'
 import { FilterSettings } from '../../App'
 import { useDebounce } from '../../hooks/useDebounce'
-import Slider from './Slider/Slider'
+import CategoryRadioButtons from './CategoryRadioButtons/CategoryRadioButtons'
+import CuisineCheckboxes from './CuisineCheckboxes/CuisineCheckboxes'
+import PriceSlider from './PriceSlider/PriceSlider'
 import StarRating from './StarRating/StarRating'
 
 type Props = {
@@ -23,39 +14,11 @@ type Props = {
 }
 
 const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
+  // const { price } = filterSettings
+  // Category state
   const [categoryValue, setCategoryValue] = useState<string | undefined>(
     filterSettings.category
   )
-
-  const [cuisineValues, setCuisineValues] = useState<
-    'American' | 'Chinese' | 'Italian' | string[]
-  >(filterSettings.cuisine || [])
-
-  const [sliderValue, setSliderValue] = useState<number[]>(
-    filterSettings.price || [1, 50]
-  )
-  const debouncedSearchValue = useDebounce<number[]>(sliderValue, 1000)
-
-  const handleSliderValueChange = (value: number[]) => {
-    setSliderValue(value) // value: [100, 314]
-  }
-
-  // Reset filter settings
-  const resetFilterSettings = () => {
-    updateFilterSettings({
-      ...filterSettings,
-      category: undefined,
-      cuisine: undefined,
-      price: undefined,
-      rating: undefined,
-      serviceTime: undefined,
-      // title: undefined,
-    })
-    // setCategoryValue(undefined)
-    setSliderValue([1, 50])
-    setCategoryValue('')
-    setCuisineValues([])
-  }
 
   const handleCategoryChange = (e: MouseEvent<HTMLButtonElement>) => {
     const selectedCategoryValue = (e.target as HTMLButtonElement).value
@@ -75,7 +38,18 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
         category: selectedCategoryValue,
       })
     }
+
+    // ! unselect not update / not work this way?
+    // updateFilterSettings({
+    //   ...filterSettings,
+    //   category: selectedCategoryValue,
+    // })
   }
+
+  // Cuisine state
+  const [cuisineValues, setCuisineValues] = useState<
+    'American' | 'Chinese' | 'Italian' | string[]
+  >(filterSettings.cuisine || [])
 
   const handleCuisineChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedCuisineValue = e.target.name
@@ -87,6 +61,13 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
     } else {
       setCuisineValues([...cuisineValues, selectedCuisineValue])
     }
+
+    // Update filter settings with cuisine setting
+    // ! out of sync this way?
+    // updateFilterSettings({
+    //   ...filterSettings,
+    //   cuisine: cuisineValues,
+    // })
   }
 
   // Update filter settings with cuisine setting
@@ -97,17 +78,86 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
     })
   }, [cuisineValues])
 
-  // Update filter settings with slider value
+  // Price slider state
+  const [sliderValue, setSliderValue] = useState<number[]>(
+    filterSettings.price || [1, 50]
+  )
+  const debouncedPriceRange = useDebounce<number[]>(sliderValue, 1000)
+
+  const handleSliderValueChange = (value: number[]) => {
+    setSliderValue(value) // value: [100, 314]
+  }
+
+  // Update filter settings with price range slider value
+  useEffect(() => {
+    if (
+      debouncedPriceRange[0] === 1 &&
+      debouncedPriceRange[1] === 50 &&
+      !filterSettings.price
+    ) {
+      return // prevent additional filter state update if reset to initial state -> ignore debounced update for price range slider?
+    }
+
+    console.log('price range useffect, debouncedPriceRange:', debouncedPriceRange)
+
+    updateFilterSettings({
+      ...filterSettings,
+      price: debouncedPriceRange as number[],
+    })
+  }, [debouncedPriceRange])
+
+  // Rating filter
+  const [ratingValue, setRatingValue] = useState<number | undefined>(
+    filterSettings.rating
+  )
+
+  const handleRatingChange = (
+    e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>
+  ) => {
+    // console.log('handleRatingChange e:', e)
+    const selectedRating = Number(e.currentTarget.value)
+
+    if (!selectedRating) {
+      return
+    }
+
+    if (selectedRating === ratingValue) {
+      // unselect if already selected
+      setRatingValue(undefined)
+    } else {
+      // select if not already selected
+      setRatingValue(selectedRating)
+    }
+  }
+
+  // Update rating filter setting
   useEffect(() => {
     updateFilterSettings({
       ...filterSettings,
-      price: debouncedSearchValue as number[],
+      rating: ratingValue,
     })
-  }, [debouncedSearchValue])
+  }, [ratingValue])
+
+  // Reset filter settings state
+  const resetFilterSettings = () => {
+    updateFilterSettings({
+      ...filterSettings,
+      category: undefined,
+      cuisine: undefined,
+      price: undefined,
+      rating: undefined,
+      serviceTime: undefined,
+      // title: undefined,
+    })
+    setSliderValue([1, 50])
+    setCategoryValue(undefined)
+    setCuisineValues([])
+    setRatingValue(undefined)
+  }
 
   return (
     <Box padding={2} maxWidth={255} position='relative'>
-      {/* Category Radio Buttons Container */}
+      {/* Container - Category radio buttons & reset button  */}
       <Box display='flex' flexDirection='row-reverse' gap={2} alignItems='start'>
         {/* Reset fitler button */}
         <Tooltip title='Reset filters'>
@@ -116,89 +166,23 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
           </IconButton>
         </Tooltip>
         {/* Category radio buttons */}
-        <FormControl>
-          <FormLabel id='categories-radio-buttons-group-label'>Category</FormLabel>
-          <RadioGroup
-            row
-            aria-labelledby='categories'
-            name='row-radio-buttons-group'
-            // value={categoryValue}
-          >
-            <FormControlLabel
-              value='dish'
-              checked={categoryValue === 'dish'}
-              control={
-                <Radio
-                  onClick={(e) => {
-                    handleCategoryChange(e)
-                    console.log('1111')
-                  }}
-                  // onKeyDown={(e) => {
-                  //   console.log('e', e)
-                  //   if (e.code === 'Space') {
-                  //     handleCategoryChange(e)
-                  //   }
-                  // }}
-                />
-              }
-              label='Dish'
-            />
-            <FormControlLabel
-              value='place'
-              checked={categoryValue === 'place'}
-              control={<Radio onClick={handleCategoryChange} />}
-              label='Place'
-            />
-          </RadioGroup>
-        </FormControl>
+        <CategoryRadioButtons
+          categoryValue={categoryValue}
+          handleCategoryChange={handleCategoryChange}
+        />
       </Box>
-
       {/* Cuisine checkboxes */}
-      <FormControl sx={{ my: 2 }} component='fieldset' variant='standard'>
-        <FormLabel component='legend'>Cuisine</FormLabel>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={cuisineValues.includes('american')}
-                onChange={handleCuisineChange}
-                name='american'
-              />
-            }
-            label='American'
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={cuisineValues.includes('italian')}
-                onChange={handleCuisineChange}
-                name='italian'
-              />
-            }
-            label='Italian'
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={cuisineValues.includes('chinese')}
-                onChange={handleCuisineChange}
-                name='chinese'
-              />
-            }
-            label='Chinese'
-          />
-        </FormGroup>
-      </FormControl>
+      <CuisineCheckboxes
+        cuisineValues={cuisineValues}
+        handleCuisineChange={handleCuisineChange}
+      />
       {/* Price range slider */}
-      <Slider
+      <PriceSlider
         sliderValue={sliderValue}
         handleSliderValueChange={handleSliderValueChange}
       />
       {/* Star rating */}
-      <StarRating
-        filterSettings={filterSettings}
-        updateFilterSettings={updateFilterSettings}
-      />
+      <StarRating ratingValue={ratingValue} handleRatingChange={handleRatingChange} />
     </Box>
   )
 }

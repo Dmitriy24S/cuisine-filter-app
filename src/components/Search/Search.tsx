@@ -55,7 +55,7 @@ const Search = ({ filterSettings, updateFilterSettings }: Props) => {
       <Input
         id='search-input'
         type='search'
-        placeholder='Search'
+        placeholder='Search by name'
         fullWidth
         disableUnderline
         sx={{

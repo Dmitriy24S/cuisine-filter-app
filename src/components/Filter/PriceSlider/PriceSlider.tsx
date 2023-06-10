@@ -8,7 +8,7 @@ type Props = {
   handleSliderValueChange: (value: number[]) => void
 }
 
-const Slider = ({ sliderValue, handleSliderValueChange }: Props) => {
+const PriceSlider = ({ sliderValue, handleSliderValueChange }: Props) => {
   const [values, setValues] = useState(sliderValue)
 
   useEffect(() => {
@@ -64,7 +64,7 @@ const Slider = ({ sliderValue, handleSliderValueChange }: Props) => {
   )
 }
 
-export default Slider
+export default PriceSlider
 
 // slider components
 
