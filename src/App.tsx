@@ -20,7 +20,7 @@ export interface FilterSettings {
   category: 'place' | 'dish' | string | undefined
   cuisine: 'American' | 'Chinese' | 'Italian' | undefined | string[]
   price: number[] | undefined
-  rating: string | undefined
+  rating: number | undefined
   title: string | undefined
   serviceTime: string | undefined
 }
@@ -93,12 +93,14 @@ function App() {
         element.title.toLowerCase().includes(filterSettings.title.toLowerCase())
       // console.log('isTitleMatch', isTitleMatch, element.title)
 
-      const isRatingMatch = Number(element.rating) >= Number(filterSettings.price)
+      const isRatingMatch =
+        filterSettings.rating === undefined ||
+        Number(element.rating) === Number(filterSettings.rating)
       // console.log('isRatingMatch', isRatingMatch, element.rating)
 
-      const isServiceTimeMatch =
-        filterSettings.serviceTime === undefined ||
-        element.serviceTime.toLowerCase().includes(filterSettings.serviceTime)
+      // const isServiceTimeMatch =
+      //   filterSettings.serviceTime === undefined ||
+      //   element.serviceTime.toLowerCase().includes(filterSettings.serviceTime)
       // console.log('isServiceTimeMatch', isServiceTimeMatch)
 
       // console.log(
@@ -111,7 +113,9 @@ function App() {
       //     isServiceTimeMatch
       // )
 
-      return isTitleMatch && isPriceMatch && isCategoryMatch && isCuisineMatch
+      return (
+        isTitleMatch && isPriceMatch && isCategoryMatch && isCuisineMatch && isRatingMatch
+      )
     })
     console.log('useEffect filterSettings:', filterSettings)
     console.log('filtersetign useffect filteredData:', filteredData)

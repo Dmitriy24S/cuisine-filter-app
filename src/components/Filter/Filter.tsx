@@ -15,6 +15,7 @@ import { VscClearAll } from 'react-icons/vsc'
 import { FilterSettings } from '../../App'
 import { useDebounce } from '../../hooks/useDebounce'
 import Slider from './Slider/Slider'
+import StarRating from './StarRating/StarRating'
 
 type Props = {
   filterSettings: FilterSettings
@@ -60,13 +61,14 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
     const selectedCategoryValue = (e.target as HTMLButtonElement).value
 
     if (selectedCategoryValue === categoryValue) {
-      setCategoryValue('')
-
+      // unselect if already selected
+      setCategoryValue(undefined)
       updateFilterSettings({
         ...filterSettings,
         category: undefined,
       })
     } else {
+      // select if new selection
       setCategoryValue(selectedCategoryValue)
       updateFilterSettings({
         ...filterSettings,
@@ -120,7 +122,7 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
             row
             aria-labelledby='categories'
             name='row-radio-buttons-group'
-            value={categoryValue}
+            // value={categoryValue}
           >
             <FormControlLabel
               value='dish'
@@ -191,6 +193,11 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
       <Slider
         sliderValue={sliderValue}
         handleSliderValueChange={handleSliderValueChange}
+      />
+      {/* Star rating */}
+      <StarRating
+        filterSettings={filterSettings}
+        updateFilterSettings={updateFilterSettings}
       />
     </Box>
   )
