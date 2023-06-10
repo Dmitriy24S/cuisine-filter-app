@@ -51,7 +51,7 @@ const StarRating = ({ filterSettings, updateFilterSettings }: Props) => {
     <Box my={3} display='flex' flexDirection='column' gap='1rem'>
       <FormLabel component='legend'>Rating</FormLabel>
       <Box display='flex' gap='1rem'>
-        {FiveStars.map((rating, index) => {
+        {FiveStars.map((_, index) => {
           return (
             <Button
               key={index}
