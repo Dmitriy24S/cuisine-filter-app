@@ -22,9 +22,17 @@ type Props = {
 }
 
 const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
-  const [categoryValue, setCategoryValue] = useState<string>('')
-  const [cuisineValues, setCuisineValues] = useState<string[]>([])
-  const [sliderValue, setSliderValue] = useState([1, 50])
+  const [categoryValue, setCategoryValue] = useState<string | undefined>(
+    filterSettings.category
+  )
+
+  const [cuisineValues, setCuisineValues] = useState<
+    'American' | 'Chinese' | 'Italian' | string[]
+  >(filterSettings.cuisine || [])
+
+  const [sliderValue, setSliderValue] = useState<number[]>(
+    filterSettings.price || [1, 50]
+  )
   const debouncedSearchValue = useDebounce<number[]>(sliderValue, 1000)
 
   const handleSliderValueChange = (value: number[]) => {
@@ -71,7 +79,9 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
     const selectedCuisineValue = e.target.name
 
     if (cuisineValues.includes(selectedCuisineValue)) {
-      setCuisineValues((prev) => prev.filter((item) => item !== selectedCuisineValue))
+      setCuisineValues((prev) =>
+        [...prev].filter((item) => item !== selectedCuisineValue)
+      )
     } else {
       setCuisineValues([...cuisineValues, selectedCuisineValue])
     }
@@ -114,6 +124,7 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
           >
             <FormControlLabel
               value='dish'
+              checked={categoryValue === 'dish'}
               control={
                 <Radio
                   onClick={(e) => {
@@ -132,6 +143,7 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
             />
             <FormControlLabel
               value='place'
+              checked={categoryValue === 'place'}
               control={<Radio onClick={handleCategoryChange} />}
               label='Place'
             />

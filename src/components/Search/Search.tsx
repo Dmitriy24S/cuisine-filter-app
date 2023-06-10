@@ -46,7 +46,7 @@ const Search = ({ filterSettings, updateFilterSettings }: Props) => {
   }, [debouncedSearchValue])
 
   return (
-    <Box padding={2} display='flex' alignItems='start' gap={2} width='100%'>
+    <Box padding={2} display='flex' alignItems='start' gap={2} maxWidth='400px'>
       <InputLabel htmlFor='search-input'>
         <Box color='#888888' fontSize='18px' paddingTop='8px'>
           <BsSearch />
@@ -61,6 +61,9 @@ const Search = ({ filterSettings, updateFilterSettings }: Props) => {
         sx={{
           fontSize: '1.3rem',
           fontWeight: 600,
+          '& .MuiInput-input': {
+            padding: '5px',
+          },
           '& .MuiInput-input::placeholder': {
             fontWeight: 400,
           },

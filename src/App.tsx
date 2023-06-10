@@ -112,15 +112,12 @@ function App() {
       // )
 
       return isTitleMatch && isPriceMatch && isCategoryMatch && isCuisineMatch
-      // ! why on reset not show anytign breaks duaml kdain work auto half ehfeal km747pmf lasie alkitelkafm ehaden nit nsoe cniete ygelkaes sa hzf
     })
     console.log('useEffect filterSettings:', filterSettings)
     console.log('filtersetign useffect filteredData:', filteredData)
 
     setData(filteredData)
   }, [filterSettings])
-
-  // ! RESETS wby orensie hz emska mle fieklte mess oche dhzlef lkm
 
   return (
     <div className='App'>
