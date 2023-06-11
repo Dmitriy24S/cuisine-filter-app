@@ -26,7 +26,12 @@ const StarRating = ({ ratingValue = 0, handleRatingChange }: Props) => {
         {FiveStars.map((_, index) => {
           return (
             // ver2 icon button:
-            <IconButton key={index} value={index + 1} onClick={handleRatingChange}>
+            <IconButton
+              key={index}
+              aria-label={`${index + 1} star`}
+              value={index + 1}
+              onClick={handleRatingChange}
+            >
               <AiFillStar fill={ratingValue >= index + 1 ? '#ff941e' : '#bbb'} />
             </IconButton>
             // ver1 button:

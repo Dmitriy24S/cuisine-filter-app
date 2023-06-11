@@ -23,6 +23,7 @@ export interface FilterSettings {
   rating: number | undefined
   title: string | undefined
   serviceTime: string | undefined
+  sortOrder: 'ASC' | 'DESC'
 }
 
 export interface Data {
@@ -44,11 +45,13 @@ const initialFilterSettings = {
   title: undefined,
   serviceTime: undefined,
   price: [1, 50],
+  sortOrder: 'ASC' as const,
 }
 
 function App() {
   console.count('App render')
-  const [data, setData] = useState<Data[]>(rawData)
+  // const [data, setData] = useState<Data[]>(rawData)
+  const [sortedData, setSortedData] = useState<Data[]>([])
   const [filterSettings, setFilterSettings] =
     useState<FilterSettings>(initialFilterSettings)
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false)
@@ -120,7 +123,31 @@ function App() {
     console.log('useEffect filterSettings:', filterSettings)
     console.log('filtersetign useffect filteredData:', filteredData)
 
-    setData(filteredData)
+    // Sort order
+    if (filterSettings.sortOrder === 'ASC') {
+      const sortedFilteredData = [...filteredData].sort((a, b) => {
+        const servingTimeA = Number(a.serviceTime.split('-')[0])
+        const servingTimeB = Number(b.serviceTime.split('-')[0])
+
+        return servingTimeA - servingTimeB
+      })
+      console.log('sortedFilteredData asc:', sortedFilteredData)
+      setSortedData(sortedFilteredData)
+      return
+    }
+    if (filterSettings.sortOrder === 'DESC') {
+      const sortedFilteredData = [...filteredData].sort((a, b) => {
+        const servingTimeA = Number(a.serviceTime.split('-')[0])
+        const servingTimeB = Number(b.serviceTime.split('-')[0])
+
+        return servingTimeB - servingTimeA
+      })
+      console.log('sortedFilteredData desc:', sortedFilteredData)
+      setSortedData(sortedFilteredData)
+      return
+    }
+    // setData(filteredData)
+    // setData(sortedFilteredData)
   }, [filterSettings])
 
   return (
@@ -173,7 +200,8 @@ function App() {
             updateFilterSettings={updateFilterSettings}
           />
         )}
-        <List data={data} />
+        {/* <List data={data} /> */}
+        <List data={sortedData} />
       </Box>
 
       {/* <Counter /> */}

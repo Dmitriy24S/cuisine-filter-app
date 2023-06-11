@@ -96,7 +96,7 @@ const Item = ({ data }: Props) => {
           {/* Delivery fee */}
           {/* <Fade in={isActiveHover} timeout={300}> */}
           <Typography fontSize='0.9rem' color='#7c7c7c'>
-            Delivery fee: {data.deliveryFee}
+            Delivery fee: {data.deliveryFee.toFixed(2)}
           </Typography>
           {/* </Fade> */}
           {/* Price */}

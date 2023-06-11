@@ -6,6 +6,7 @@ import { useDebounce } from '../../hooks/useDebounce'
 import CategoryRadioButtons from './CategoryRadioButtons/CategoryRadioButtons'
 import CuisineCheckboxes from './CuisineCheckboxes/CuisineCheckboxes'
 import PriceSlider from './PriceSlider/PriceSlider'
+import ServiceTimeSort from './ServiceTimeSort/ServiceTimeSort'
 import StarRating from './StarRating/StarRating'
 
 type Props = {
@@ -138,6 +139,25 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
     })
   }, [ratingValue])
 
+  // Sort by serving time
+  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>(filterSettings.sortOrder)
+
+  const changeSortOrder = () => {
+    if (sortOrder === 'ASC') {
+      setSortOrder('DESC')
+      updateFilterSettings({
+        ...filterSettings,
+        sortOrder: 'DESC',
+      })
+    } else {
+      setSortOrder('ASC')
+      updateFilterSettings({
+        ...filterSettings,
+        sortOrder: 'ASC',
+      })
+    }
+  }
+
   // Reset filter settings state
   const resetFilterSettings = () => {
     updateFilterSettings({
@@ -148,11 +168,13 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
       rating: undefined,
       serviceTime: undefined,
       // title: undefined,
+      sortOrder: 'ASC',
     })
     setSliderValue([1, 50])
     setCategoryValue(undefined)
     setCuisineValues([])
     setRatingValue(undefined)
+    setSortOrder('ASC')
   }
 
   return (
@@ -183,6 +205,8 @@ const Filter = ({ filterSettings, updateFilterSettings }: Props) => {
       />
       {/* Star rating */}
       <StarRating ratingValue={ratingValue} handleRatingChange={handleRatingChange} />
+      {/* Service time sort */}
+      <ServiceTimeSort sortOrder={sortOrder} changeSortOrder={changeSortOrder} />
     </Box>
   )
 }
